@@ -10,6 +10,17 @@ import sys
 from netCDF4 import Dataset
 
 
+### Set up interactive input
+
+print "Choose type of radiative flux: direct, diffuse or global ..."
+radflux = raw_input("--> ")
+
+print "Choose scenario ...\nFor effect of no aerosol, type: aer\n\
+For effect of no cloud type: cld"
+scen = raw_input("--> ")
+
+### Read in maps
+
 fig, ax = plt.subplots(frameon=False)
 #ax = fig.add_subplot(111)
 
@@ -62,15 +73,16 @@ sfc_diffuse_pri = fh.variables['sfc_diffuse_pri'][:]
 sfc_diffuse_noaero = fh.variables['sfc_diffuse_noaero'][:]
 
 ### Calculate Ratio
-sfc_direct_cld_ratio = 100. * (sfc_direct_clr - sfc_direct_all) / sfc_direct_all
-sfc_direct_aer_ratio = 100. *(sfc_direct_noaero - sfc_direct_all) / sfc_direct_all
+sfc_ratio={}
+sfc_ratio[('direct','cld')] = 100. * (sfc_direct_clr - sfc_direct_all) / sfc_direct_all
+sfc_ratio[('direct','aer')] = 100. *(sfc_direct_noaero - sfc_direct_all) / sfc_direct_all
 
-sfc_diffuse_cld_ratio = 100. * (sfc_diffuse_clr - sfc_diffuse_all) / sfc_diffuse_all
-sfc_diffuse_aer_ratio = 100. * (sfc_diffuse_noaero - sfc_diffuse_all) / sfc_diffuse_all
+sfc_ratio[('diffuse','cld')] = 100. * (sfc_diffuse_clr - sfc_diffuse_all) / sfc_diffuse_all
+sfc_ratio[('diffuse','aer')] = 100. * (sfc_diffuse_noaero - sfc_diffuse_all) / sfc_diffuse_all
 
-sfc_global_cld_ratio = 100. * (sfc_direct_clr + sfc_diffuse_clr - sfc_direct_all -
+sfc_ratio[('global','cld')] = 100. * (sfc_direct_clr + sfc_diffuse_clr - sfc_direct_all -
                         sfc_diffuse_all) / (sfc_direct_all + sfc_diffuse_all)
-sfc_global_aer_ratio = 100. * (sfc_direct_noaero + sfc_diffuse_noaero - sfc_direct_all -
+sfc_ratio[('global','aer')] = 100. * (sfc_direct_noaero + sfc_diffuse_noaero - sfc_direct_all -
                         sfc_diffuse_all) / (sfc_direct_all + sfc_diffuse_all)
 
 ### Create color dictionary that maps values of each province to colorbar
@@ -78,14 +90,35 @@ sfc_global_aer_ratio = 100. * (sfc_direct_noaero + sfc_diffuse_noaero - sfc_dire
 color={}
 
 for i in range(len(pro_nm)):
-    color[pro_nm[i]] = sfc_direct_aer_ratio[i]
+    color[pro_nm[i]] = sfc_ratio[(radflux,scen)][i]
 color['Shanghai'] = color['Jiangsu']
 
-#cmap=cm.YlOrRd
-cmap=cm.YlGnBu_r
+if radflux == 'diffuse':
+    cmap=cm.YlGnBu_r
+else:
+    cmap=cm.YlOrRd
 
-#bounds = np.linspace(0,140,8)
-bounds = np.linspace(-30,0,7)
+if scen == 'aer':
+    if radflux == 'direct':
+        bounds = np.linspace(0,140,8)
+    elif radflux == 'diffuse':
+        bounds = np.linspace(-30,0,7)
+    elif radflux == 'global':
+        bounds = np.linspace(0,30,7)
+    else:
+        raise ValueError('None of direct, diffuse or global is chosen.')
+elif scen == 'cld':
+    if radflux == 'direct':
+        bounds = np.linspace(0,300,11)
+    elif radflux == 'diffuse':
+        bounds = np.linspace(-120,0,7)
+    elif radflux == 'global':
+        bounds = np.linspace(0,120,7)
+    else:
+        raise ValueError('None of direct, diffuse or global is chosen.')
+else:
+    raise ValueError('None of aer or cld is chosen.')
+
 norm = colors.BoundaryNorm(bounds, cmap.N)
 
 #bounds = np.linspace(0,120,21)
@@ -96,13 +129,14 @@ norm = colors.BoundaryNorm(bounds, cmap.N)
 
 for key, value in patches.iteritems():
     print key+" "+str(color[key])
-#    ax.add_collection(PatchCollection(value,\
-#        facecolor=cm.YlOrRd(norm(color[key])),\
-#        cmap=cm.YlOrRd, edgecolor='k', linewidth=1., zorder=2))
-    ax.add_collection(PatchCollection(value,\
-        facecolor=cm.YlGnBu_r(norm(color[key])),\
-        cmap=cm.YlGnBu_r, edgecolor='k', linewidth=1., zorder=2))
-
+    if radflux == 'diffuse':
+        ax.add_collection(PatchCollection(value,\
+            facecolor=cm.YlGnBu_r(norm(color[key])),\
+            cmap=cm.YlGnBu_r, edgecolor='k', linewidth=1., zorder=2))
+    else:
+        ax.add_collection(PatchCollection(value,\
+            facecolor=cm.YlOrRd(norm(color[key])),\
+            cmap=cm.YlOrRd, edgecolor='k', linewidth=1., zorder=2))
 
 
 #    ax.add_collection(PatchCollection(value, facecolors=color[key], cmap=cm.RdYlBu, edgecolor='k',
@@ -121,6 +155,6 @@ cb = mpl.colorbar.ColorbarBase(axcb, cmap=cmap, norm=norm, boundaries=bounds,
 
 cb.set_label('%')
 
-plt.savefig('prov_sfc_sw_diffuse_loss_rmvaero_ratio.ps',format='ps')
+plt.savefig('prov_sfc_sw_'+radflux+'_'+scen+'_change.ps',format='ps')
 
 plt.show()
