@@ -1,2 +1,6 @@
 # png file
 *.png
+
+# shell file 
+*.sh
+*.bash
