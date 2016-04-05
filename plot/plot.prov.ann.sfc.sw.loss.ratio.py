@@ -81,11 +81,11 @@ for i in range(len(pro_nm)):
     color[pro_nm[i]] = sfc_direct_aer_ratio[i]
 color['Shanghai'] = color['Jiangsu']
 
-cmap=cm.YlOrRd
-#cmap=cm.YlGnBu_r
+#cmap=cm.YlOrRd
+cmap=cm.YlGnBu_r
 
-bounds = np.linspace(0,140,8)
-#bounds = np.linspace(-50,0,11)
+#bounds = np.linspace(0,140,8)
+bounds = np.linspace(-30,0,7)
 norm = colors.BoundaryNorm(bounds, cmap.N)
 
 #bounds = np.linspace(0,120,21)
@@ -96,12 +96,12 @@ norm = colors.BoundaryNorm(bounds, cmap.N)
 
 for key, value in patches.iteritems():
     print key+" "+str(color[key])
-    ax.add_collection(PatchCollection(value,\
-        facecolor=cm.YlOrRd(norm(color[key])),\
-        cmap=cm.YlOrRd, edgecolor='k', linewidth=1., zorder=2))
 #    ax.add_collection(PatchCollection(value,\
-#        facecolor=cm.YlGnBu_r(norm(color[key])),\
-#        cmap=cm.YlGnBu_r, edgecolor='k', linewidth=1., zorder=2))
+#        facecolor=cm.YlOrRd(norm(color[key])),\
+#        cmap=cm.YlOrRd, edgecolor='k', linewidth=1., zorder=2))
+    ax.add_collection(PatchCollection(value,\
+        facecolor=cm.YlGnBu_r(norm(color[key])),\
+        cmap=cm.YlGnBu_r, edgecolor='k', linewidth=1., zorder=2))
 
 
 
@@ -121,6 +121,6 @@ cb = mpl.colorbar.ColorbarBase(axcb, cmap=cmap, norm=norm, boundaries=bounds,
 
 cb.set_label('%')
 
-plt.savefig('prov_sfc_sw_direct_increase_rmvaero_ratio.ps',format='ps')
+plt.savefig('prov_sfc_sw_diffuse_loss_rmvaero_ratio.ps',format='ps')
 
 plt.show()
