@@ -20,7 +20,7 @@ map = Basemap(llcrnrlon=80.,llcrnrlat=12.5,urcrnrlon=140.,urcrnrlat=52.5,resolut
 #map.fillcontinents(color='#ddaa66') #lake_color='aqua'
 #map.drawcoastlines()
 
-map.readshapefile('../../maps_masks_shapefiles/china_provinces/china_provinces00/china_provinces00','cnprovinces', drawbounds = True)
+map.readshapefile('/home/xl4/maps_masks_shapefiles/china_provinces/china_provinces00/china_provinces00','cnprovinces', drawbounds = True)
 
 patches = {}
 subpatches = []
@@ -48,7 +48,7 @@ pro_nm = ["Beijing","Tianjin","Hebei","Shanxi","Neimenggu","Liaoning","Jilin",\
 proids = range(1,32) 
 
 ### Read in surface sw radiation data
-nc_file = "./prov_sfc_sw_annual_31.nc"
+nc_file = "../annual/prov_annual_sfc_sw_31.nc"
 
 fh = Dataset(nc_file, 'r')
 
