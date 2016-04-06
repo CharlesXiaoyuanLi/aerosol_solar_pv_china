@@ -80,9 +80,12 @@ elif varchosen == 'diffuse':
 if varchosen == 'diffuse':
     #cs = m.contourf(x,y,diff[varchosen],clevs,cmap=cm.YlGnBu_r,extend="both") # IMPORTANT: extend="both" enables contour for data out of range of the colorbar
     cs = m.imshow(diffplot,vmin=clevs[0],vmax=clevs[-1],cmap=cm.YlGnBu_r)
+    #cs = m.pcolormesh(x,y,diff[varchosen],vmin=clevs[0],vmax=clevs[-1],cmap=cm.YlGnBu_r)
+
 else:
     #cs = m.contourf(x,y,diff[varchosen],clevs,cmap=cm.YlOrRd,extend="both") # IMPORTANT: extend="both" enables contour for data out of range of the colorbar
     cs = m.imshow(diffplot,vmin=clevs[0],vmax=clevs[-1],cmap=cm.YlOrRd)
+    #cs = m.pcolormesh(x,y,diff[varchosen],vmin=clevs[0],vmax=clevs[-1],cmap=cm.YlOrRd)
 
 # add colorbar
 cbar = m.colorbar(cs,location='bottom',pad="5%")
